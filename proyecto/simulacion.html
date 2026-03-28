@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SIAD - Simulador en Tiempo Real | Sistema Inteligente de Almacenamiento Dinámico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a2f2a 0%, #1a4a3a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0a2f2a 0%, #1a4a3a 50%, #0a2f2a 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "⚙️";
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.05;
+            bottom: -30px;
+            right: -30px;
+            transform: rotate(-15deg);
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            background: #1a3a32;
+            padding: 15px 20px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background: #fbbf24;
+            color: #1a3a32;
+            transform: translateY(-2px);
+        }
+
+        .simulator-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header Solar */
+        .solar-header {
+            background: linear-gradient(135deg, #1e3a2f 0%, #0f2a1f 100%);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #2e7d5e;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .solar-header h1 {
+            color: #fbbf24;
+            font-size: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .energy-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .energy-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #2e7d5e;
+            transition: transform 0.3s ease;
+        }
+
+        .energy-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .energy-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .energy-card .label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .solar-panel {
+            background: linear-gradient(135deg, #1e4a6e, #0f2a3a);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .solar-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .sun-icon {
+            font-size: 48px;
+            animation: spin 20s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Dashboard */
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .warehouse-panel {
+            background: linear-gradient(180deg, #1e2a2a 0%, #0f1a1a 100%);
+            border-radius: 20px;
+            border: 1px solid #2e7d5e;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: #1e4a3a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            color: white;
+            font-size: 18px;
+        }
+
+        .warehouse-view {
+            padding: 20px;
+            background: #0f1a1a;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .rack-system {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .rack-column {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #1e2a2a;
+            padding: 8px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .locker {
+            background: linear-gradient(135deg, #2d4a3a 0%, #1e3a2a 100%);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #2e7d5e;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .locker.size-small { width: 70px; height: 60px; font-size: 10px; }
+        .locker.size-medium { width: 90px; height: 70px; font-size: 11px; }
+        .locker.size-large { width: 120px; height: 85px; font-size: 12px; }
+        .locker.size-xl { width: 150px; height: 100px; font-size: 12px; }
+
+        .locker.occupied {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: #60a5fa;
+        }
+
+        .locker.moving {
+            animation: shake 0.3s ease-in-out infinite;
+            background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+        }
+
+        .locker.selected {
+            box-shadow: 0 0 0 3px #fbbf24;
+        }
+
+        .locker.empty-locker {
+            background: linear-gradient(135deg, #1e2a2a 0%, #0f1a1a 100%);
+            opacity: 0.7;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .locker-content {
+            text-align: center;
+            word-break: break-word;
+            padding: 4px;
+        }
+
+        .locker-size-indicator {
+            font-size: 9px;
+            opacity: 0.7;
+            margin-top: 3px;
+        }
+
+        .control-panel {
+            background: linear-gradient(180deg, #1e2a2a 0%, #0f1a1a 100%);
+            border-radius: 20px;
+            border: 1px solid #2e7d5e;
+            overflow: hidden;
+        }
+
+        .command-section {
+            padding: 20px;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input-group input {
+            flex: 1;
+            padding: 12px;
+            background: #1e2a2a;
+            border: 1px solid #2e7d5e;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .search-input-group input:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-solar {
+            background: linear-gradient(135deg, #fbbf24, #eab308);
+            color: #0f1a1a;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .products-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .product-card {
+            background: #1e2a2a;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .product-card:hover {
+            background: #2e3a3a;
+            transform: translateX(5px);
+        }
+
+        .product-card.selected {
+            border-left-color: #fbbf24;
+            background: #2e4a3a;
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: white;
+        }
+
+        .movement-timeline {
+            background: #0f1a1a;
+            border-radius: 8px;
+            padding: 12px;
+            height: 180px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 15px;
+            border: 1px solid #2e7d5e;
+        }
+
+        .movement-step {
+            padding: 6px;
+            border-bottom: 1px solid #2e7d5e;
+            color: #94a3b8;
+            animation: fadeIn 0.3s;
+        }
+
+        .movement-step.active {
+            color: #fbbf24;
+            font-weight: bold;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .movement-step.completed {
+            color: #22c55e;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .delivery-area {
+            background: linear-gradient(135deg, #fbbf24, #eab308);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: #0f1a1a;
+            font-weight: bold;
+            animation: fadeIn 0.5s;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a4a3a, #0a2f2a);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1000px) {
+            .main-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 24px;
+            }
+            
+            .locker.size-small { width: 55px; height: 50px; }
+            .locker.size-medium { width: 70px; height: 60px; }
+            .locker.size-large { width: 90px; height: 75px; }
+            .locker.size-xl { width: 110px; height: 85px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏭 SIAD - SISTEMA INTELIGENTE DE ALMACENAMIENTO DINÁMICO</h1>
+        <p>Simulador en Tiempo Real | Proyecto completo de Ingeniería de Software con integración Mecánica y Electrónica</p>
+    </header>
+
+    <nav>
+        <a href="./index.html">🏠 Inicio</a>
+        <a href="./index.html#intro">📖 Introducción</a>
+        <a href="./index.html#problema">⚠️ Problema</a>
+        <a href="./index.html#objetivos">🎯 Objetivos</a>
+        <a href="./index.html#sistema">⚙️ Sistema</a>
+        <a href="./index.html#estructura">🏗️ Estructura</a>
+        <a href="./index.html#maquinaria">🔧 Maquinaria</a>
+        <a href="./index.html#software">💻 Software</a>
+        <a href="./index.html#logica">🧠 Lógica</a>
+        <a href="./index.html#funcionamiento">🔄 Funcionamiento</a>
+        <a href="./index.html#costos">💰 Costos</a>
+        <a href="./index.html#impacto">🌍 Impacto</a>
+        <a href="./simulacion.html" style="background: #fbbf24; color: #1a3a32;">🎮 Simulación</a>
+    </nav>
+
+    <div class="simulator-container">
+        <!-- HEADER SOLAR -->
+        <div class="solar-header">
+            <h1>☀️ SIAD-GREEN | Almacenamiento Inteligente con Energía Solar</h1>
+            
+            <div class="energy-banner">
+                <div class="energy-card">
+                    <div class="value" id="solarPower">3,250</div>
+                    <div class="label">Potencia Solar (W)</div>
+                </div>
+                <div class="energy-card">
+                    <div class="value" id="batteryLevel">87%</div>
+                    <div class="label">Nivel Batería LiFePO4</div>
+                </div>
+                <div class="energy-card">
+                    <div class="value" id="recoveredEnergy">1,240</div>
+                    <div class="label">Energía Recuperada (Wh)</div>
+                </div>
+                <div class="energy-card">
+                    <div class="value" id="co2Saved">156</div>
+                    <div class="label">CO₂ Ahorrado (kg)</div>
+                </div>
+            </div>
+            
+            <div class="solar-panel">
+                <div class="solar-status">
+                    <div class="sun-icon">☀️</div>
+                    <div>
+                        <div style="color: #fbbf24; font-weight: bold;">Sistema Solar Activo</div>
+                        <div style="font-size: 12px; color: #94a3b8;">Paneles: 5kWp | Autonomía: 72h</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge" style="background: #22c55e;">🌍 Funciona en cualquier país</span>
+                    <span class="badge" style="background: #fbbf24; margin-left: 10px;">🔋 100% Off-Grid</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN DASHBOARD -->
+        <div class="main-dashboard">
+            <div class="warehouse-panel">
+                <div class="panel-header">
+                    <h3>🏗️ Estructura SIAD con Movimiento Automatizado</h3>
+                    <div class="status-badge">
+                        <span class="badge" style="background: #22c55e;">⚡ Simulación en Tiempo Real</span>
+                    </div>
+                </div>
+                <div class="warehouse-view">
+                    <div id="rackVisualization" class="rack-system"></div>
+                    <div id="deliveryArea" class="delivery-area" style="display: none;">
+                        🚚 ÁREA DE ENTREGA - Producto disponible
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #2e7d5e;">
+                        🔋 Operación 100% con energía renovable | Clic en cualquier locker para seleccionar producto
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel-header">
+                    <h3>🎮 Panel de Control - Operario</h3>
+                </div>
+                <div class="command-section">
+                    <div class="search-input-group">
+                        <input type="text" id="productSearch" placeholder="🔍 Buscar producto... Ej: panel solar, taladro, llave..." autocomplete="off">
+                        <button class="btn btn-solar" onclick="searchProduct()">Buscar</button>
+                    </div>
+
+                    <div id="productsList" class="products-list"></div>
+
+                    <div id="selectedProductPanel" style="display: none; margin-top: 20px;">
+                        <div style="background: #fbbf24; color: #0f1a1a; padding: 10px; border-radius: 8px; font-weight: bold;">
+                            📦 Producto Seleccionado
+                        </div>
+                        <div id="selectedInfo" style="margin-top: 10px; color: white;"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="btn btn-success" id="executeBtn" onclick="executeMovement()" style="flex: 1;">
+                                ⬇️ Traer producto (Energía Solar)
+                            </button>
+                            <button class="btn btn-danger" onclick="clearSelection()" style="flex: 1;">
+                                Cancelar
+                            </button>
+                        </div>
+                        <div id="movementSimulation" class="movement-timeline">
+                            <div class="movement-step">⏳ Esperando comando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESTADÍSTICAS DE RENDIMIENTO -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="number">70%</div>
+                <div class="label">Reducción de Tiempos de Búsqueda</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">100%</div>
+                <div class="label">Eliminación de Accidentes por Caídas</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">40%</div>
+                <div class="label">Ahorro en Inversión vs Robots</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">24/7</div>
+                <div class="label">Operación Continua</div>
+            </div>
+        </div>
+
+        <!-- INFO GLOBAL -->
+        <div style="background: #1e2a2a; border-radius: 20px; margin-top: 20px; padding: 20px; border: 1px solid #2e7d5e;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold;">🌍 Adaptabilidad Global</div>
+                    <div style="font-size: 13px; color: #94a3b8; margin-top: 8px;">
+                        ✅ Funciona en cualquier país (110V/220V/380V)<br>
+                        ✅ Operación Off-Grid sin conexión eléctrica<br>
+                        ✅ Respaldo solar + baterías 72h<br>
+                        ✅ Temperatura: -20°C a +50°C
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold;">🛡️ Seguridad Laboral</div>
+                    <div style="font-size: 13px; color: #94a3b8; margin-top: 8px;">
+                        ❌ No más escaleras ni andamios<br>
+                        ✅ Productos bajan al operario<br>
+                        ✅ Cero accidentes por caídas
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold;">💰 Reducción de Costos</div>
+                    <div style="font-size: 13px; color: #94a3b8; margin-top: 8px;">
+                        ❌ Sin bandas transportadoras<br>
+                        ❌ Sin robots costosos<br>
+                        ✅ Energía solar: costo $0
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold;">⚡ Eficiencia Energética</div>
+                    <div style="font-size: 13px; color: #94a3b8; margin-top: 8px;">
+                        ✅ Frenos regenerativos<br>
+                        ✅ Recuperación energética +40%<br>
+                        ✅ Consumo optimizado
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // SIAD-GREEN SIMULADOR EN TIEMPO REAL
+        // =====================================================
+        
+        const CONFIG = { levels: 5, columns: 6 };
+        
+        const productsDB = [
+            { id: 1, name: "☀️ Panel Solar 300W", category: "solar", size: "xl", level: 4, column: 2, weight: 18 },
+            { id: 2, name: "🔋 Inversor Solar 5kW", category: "solar", size: "large", level: 4, column: 3, weight: 12 },
+            { id: 3, name: "🔧 Taladro percutor", category: "herramientas", size: "medium", level: 3, column: 1, weight: 2.5 },
+            { id: 4, name: "🔨 Martillo", category: "herramientas", size: "small", level: 2, column: 0, weight: 0.8 },
+            { id: 5, name: "🔋 Batería Litio 48V", category: "solar", size: "medium", level: 4, column: 4, weight: 25 },
+            { id: 6, name: "🧤 Guantes seguridad", category: "seguridad", size: "small", level: 1, column: 0, weight: 0.2 },
+            { id: 7, name: "📦 Controlador MPPT", category: "solar", size: "small", level: 3, column: 5, weight: 1.5 },
+            { id: 8, name: "⚡ Cable Solar 50m", category: "solar", size: "large", level: 2, column: 4, weight: 5 }
+        ];
+        
+        let lockers = [];
+        let selectedProduct = null;
+        let isMoving = false;
+        
+        const sizeClass = { small: "size-small", medium: "size-medium", large: "size-large", xl: "size-xl" };
+        
+        function initSystem() {
+            for (let level = CONFIG.levels - 1; level >= 0; level--) {
+                for (let col = 0; col < CONFIG.columns; col++) {
+                    lockers.push({ 
+                        id: `L${level}-${col}`, 
+                        level, 
+                        column: col, 
+                        occupied: false, 
+                        product: null,
+                        isMoving: false
+                    });
+                }
+            }
+            
+            productsDB.forEach(product => {
+                const locker = lockers.find(l => l.level === product.level && l.column === product.column);
+                if (locker) { 
+                    locker.occupied = true; 
+                    locker.product = { ...product }; 
+                }
+            });
+            
+            renderWarehouse();
+            renderProductsList();
+            startEnergySimulation();
+        }
+        
+        function renderWarehouse() {
+            const container = document.getElementById('rackVisualization');
+            container.innerHTML = '';
+            
+            for (let col = 0; col < CONFIG.columns; col++) {
+                const columnDiv = document.createElement('div');
+                columnDiv.className = 'rack-column';
+                columnDiv.style.position = 'relative';
+                
+                for (let level = CONFIG.levels - 1; level >= 0; level--) {
+                    const locker = lockers.find(l => l.level === level && l.column === col);
+                    const lockerDiv = document.createElement('div');
+                    
+                    let size = "size-medium";
+                    if (locker?.product) size = sizeClass[locker.product.size] || "size-medium";
+                    lockerDiv.className = `locker ${size}`;
+                    
+                    if (locker?.occupied) lockerDiv.classList.add('occupied');
+                    if (!locker?.occupied) lockerDiv.classList.add('empty-locker');
+                    if (locker?.isMoving) lockerDiv.classList.add('moving');
+                    if (selectedProduct && selectedProduct.column === col && selectedProduct.level === level) {
+                        lockerDiv.classList.add('selected');
+                    }
+                    
+                    lockerDiv.onclick = () => selectProductByPosition(level, col);
+                    
+                    if (locker?.product) {
+                        lockerDiv.innerHTML = `
+                            <div class="locker-content">${locker.product.name.substring(0, 12)}</div>
+                            <div class="locker-size-indicator">${locker.product.size.toUpperCase()}</div>
+                        `;
+                    } else {
+                        lockerDiv.innerHTML = `<div class="locker-content">Vacío</div>`;
+                    }
+                    
+                    columnDiv.appendChild(lockerDiv);
+                }
+                container.appendChild(columnDiv);
+            }
+        }
+        
+        function renderProductsList(filter = '') {
+            const container = document.getElementById('productsList');
+            let filtered = productsDB;
+            if (filter) filtered = productsDB.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+            
+            container.innerHTML = filtered.map(p => `
+                <div class="product-card" onclick="selectProduct(${p.id})">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-details" style="font-size: 11px; color: #94a3b8;">
+                        📐 ${p.size.toUpperCase()} | 📍 Nivel ${p.level+1}, Col ${p.column+1} | ⚡ ${p.weight}kg
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function selectProduct(id) {
+            if (isMoving) {
+                addMovementLog("⏳ Sistema ocupado, espere...", "warning");
+                return;
+            }
+            
+            const product = productsDB.find(p => p.id === id);
+            if (product) {
+                selectedProduct = product;
+                document.getElementById('selectedProductPanel').style.display = 'block';
+                document.getElementById('selectedInfo').innerHTML = `
+                    <div><strong>${product.name}</strong></div>
+                    <div style="font-size: 12px;">📍 Ubicación: Nivel ${product.level+1} | Columna ${product.column+1}</div>
+                    <div style="font-size: 12px;">📦 Tamaño: ${product.size.toUpperCase()} | Peso: ${product.weight}kg</div>
+                    <div style="font-size: 12px; color: #fbbf24; margin-top: 5px;">⚡ Movimiento con Energía Solar</div>
+                `;
+                renderWarehouse();
+                
+                const timeline = document.getElementById('movementSimulation');
+                timeline.innerHTML = '<div class="movement-step">✅ Producto seleccionado. Presiona "Traer producto" para iniciar el movimiento.</div>';
+            }
+        }
+        
+        function selectProductByPosition(level, col) {
+            if (isMoving) return;
+            const locker = lockers.find(l => l.level === level && l.column === col);
+            if (locker?.product) selectProduct(locker.product.id);
+        }
+        
+        function addMovementLog(message, type = 'active') {
+            const timeline = document.getElementById('movementSimulation');
+            const stepDiv = document.createElement('div');
+            stepDiv.className = `movement-step ${type}`;
+            stepDiv.innerHTML = message;
+            timeline.appendChild(stepDiv);
+            timeline.scrollTop = timeline.scrollHeight;
+        }
+        
+        async function executeMovement() {
+            if (!selectedProduct) {
+                addMovementLog("❌ No hay producto seleccionado", "completed");
+                return;
+            }
+            
+            if (isMoving) {
+                addMovementLog("⏳ Ya hay un movimiento en curso", "warning");
+                return;
+            }
+            
+            isMoving = true;
+            const executeBtn = document.getElementById('executeBtn');
+            executeBtn.disabled = true;
+            
+            const timeline = document.getElementById('movementSimulation');
+            timeline.innerHTML = '';
+            
+            const currentLocker = lockers.find(l => l.level === selectedProduct.level && l.column === selectedProduct.column);
+            if (!currentLocker) {
+                addMovementLog("❌ Error: Producto no encontrado", "completed");
+                isMoving = false;
+                executeBtn.disabled = false;
+                return;
+            }
+            
+            currentLocker.isMoving = true;
+            renderWarehouse();
+            
+            const steps = [
+                { msg: "🔍 Localizando locker en posición...", delay: 500 },
+                { msg: `📍 Locker encontrado en Nivel ${selectedProduct.level + 1}, Columna ${selectedProduct.column + 1}`, delay: 600 },
+                { msg: "☀️ Verificando disponibilidad de energía solar...", delay: 500 },
+                { msg: "✅ Energía solar disponible: 3,250W", delay: 500 },
+                { msg: "🔄 Calculando ruta óptima con algoritmo A*...", delay: 700 },
+                { msg: `⬅️ Movimiento horizontal: desplazamiento a columna de entrega (${selectedProduct.column + 1} → 1)`, delay: 800 },
+                { msg: "⚙️ Activando motores paso a paso en rieles horizontales...", delay: 600 },
+                { msg: `⬇️ Descenso vertical desde nivel ${selectedProduct.level + 1} hasta nivel 1`, delay: 800 },
+                { msg: "🔋 Sistema de frenos regenerativos activado - Recuperación energética +40%", delay: 700 },
+                { msg: "📍 Posicionamiento preciso en área de entrega...", delay: 600 },
+                { msg: "🔓 Desbloqueo de puerta electrónica", delay: 500 },
+                { msg: "📦 Producto disponible en área de entrega", delay: 500 }
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                addMovementLog(steps[i].msg, i === steps.length - 1 ? "completed" : "active");
+                await new Promise(r => setTimeout(r, steps[i].delay));
+            }
+            
+            const deliveryArea = document.getElementById('deliveryArea');
+            deliveryArea.style.display = 'block';
+            deliveryArea.innerHTML = `🚚 PRODUCTO ENTREGADO: ${selectedProduct.name} - ¡Retire su producto!`;
+            
+            updateStatsAfterMovement();
+            
+            currentLocker.occupied = false;
+            currentLocker.product = null;
+            currentLocker.isMoving = false;
+            
+            const productIndex = productsDB.findIndex(p => p.id === selectedProduct.id);
+            if (productIndex !== -1) {
+                productsDB.splice(productIndex, 1);
+            }
+            
+            renderWarehouse();
+            renderProductsList();
+            
+            addMovementLog("✅ Movimiento completado con energía solar - Cero emisiones de CO₂", "completed");
+            addMovementLog("🔄 El sistema se está reorganizando para la siguiente operación...", "active");
+            
+            await new Promise(r => setTimeout(r, 1500));
+            
+            setTimeout(() => {
+                deliveryArea.style.display = 'none';
+            }, 3000);
+            
+            isMoving = false;
+            executeBtn.disabled = false;
+            clearSelection();
+        }
+        
+        function updateStatsAfterMovement() {
+            const recoveredElement = document.getElementById('recoveredEnergy');
+            const co2Element = document.getElementById('co2Saved');
+            
+            if (recoveredElement) {
+                let currentRecovered = parseInt(recoveredElement.innerText);
+                currentRecovered += Math.floor(Math.random() * 50) + 30;
+                recoveredElement.innerText = currentRecovered;
+            }
+            
+            if (co2Element) {
+                let currentCO2 = parseInt(co2Element.innerText);
+                currentCO2 += Math.floor(Math.random() * 3) + 2;
+                co2Element.innerText = currentCO2;
+            }
+        }
+        
+        function clearSelection() {
+            if (isMoving) return;
+            selectedProduct = null;
+            document.getElementById('selectedProductPanel').style.display = 'none';
+            renderWarehouse();
+        }
+        
+        function searchProduct() {
+            const query = document.getElementById('productSearch').value;
+            renderProductsList(query);
+        }
+        
+        function startEnergySimulation() {
+            setInterval(() => {
+                const solarElement = document.getElementById('solarPower');
+                const batteryElement = document.getElementById('batteryLevel');
+                
+                if (solarElement && batteryElement) {
+                    const currentSolar = parseInt(solarElement.innerText);
+                    const variation = Math.floor(Math.random() * 400) - 200;
+                    let newSolar = currentSolar + variation;
+                    newSolar = Math.min(4500, Math.max(2000, newSolar));
+                    solarElement.innerText = newSolar;
+                    
+                    let currentBattery = parseInt(batteryElement.innerText);
+                    if (newSolar > 3500 && currentBattery < 95) {
+                        currentBattery = Math.min(100, currentBattery + 1);
+                        batteryElement.innerText = currentBattery + '%';
+                    } else if (newSolar < 2500 && currentBattery > 20 && !isMoving) {
+                        currentBattery = Math.max(20, currentBattery - 0.5);
+                        batteryElement.innerText = Math.floor(currentBattery) + '%';
+                    }
+                }
+            }, 3000);
+        }
+        
+        initSystem();
+    </script>
+</body>
+</html>

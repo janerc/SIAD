@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAD - Sistema Inteligente de Almacenamiento Dinámico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fb;
+            color: #1a2a3a;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0a2f2a 0%, #1a4a3a 50%, #0a2f2a 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "⚙️";
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            bottom: -50px;
+            right: -50px;
+            transform: rotate(-15deg);
+        }
+
+        header h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            background: #1a3a32;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background: #fbbf24;
+            color: #1a3a32;
+            transform: translateY(-2px);
+        }
+
+        /* Sections */
+        section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: #1a4a3a;
+            font-size: 32px;
+            margin-bottom: 25px;
+            border-left: 5px solid #fbbf24;
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: #2d6a4f;
+            font-size: 24px;
+            margin: 20px 0 15px 0;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .image-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .image-card .caption {
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+            color: #1a3a32;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a4a3a, #0a2f2a);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: #e8f0ee;
+            transform: scale(1.05);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .feature h4 {
+            color: #1a4a3a;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, #1a4a3a, #0a2f2a);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a2f2a;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            header h1 {
+                font-size: 28px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            nav a {
+                padding: 5px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏭 SIAD - SISTEMA INTELIGENTE DE ALMACENAMIENTO DINÁMICO</h1>
+        <p>Innovación en Logística Automatizada | Proyecto de Ingeniería de Software con integración Mecánica y Electrónica</p>
+    </header>
+
+    <nav>
+        <a href="#intro">Introducción</a>
+        <a href="#problema">Problema</a>
+        <a href="#objetivos">Objetivos</a>
+        <a href="#sistema">Sistema</a>
+        <a href="#estructura">Estructura</a>
+        <a href="#maquinaria">Maquinaria</a>
+        <a href="#software">Software</a>
+        <a href="#logica">Lógica</a>
+        <a href="#funcionamiento">Funcionamiento</a>
+        <a href="#costos">Costos</a>
+        <a href="#impacto">Impacto</a>
+        <a href="./simulacion.html" style="background: #fbbf24; color: #1a3a32;">🎮 Simulación</a>
+    </nav>
+
+    <!-- Stats Section -->
+    <div class="stats-container" style="max-width: 1200px; margin: 20px auto;">
+        <div class="stat-card">
+            <div class="number">70%</div>
+            <div class="label">Reducción de Tiempos de Búsqueda</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">100%</div>
+            <div class="label">Eliminación de Accidentes por Caídas</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">40%</div>
+            <div class="label">Ahorro en Inversión vs Robots</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">24/7</div>
+            <div class="label">Operación Continua</div>
+        </div>
+    </div>
+
+    <section id="intro">
+        <h2>1. Introducción</h2>
+        <p>En la era de la Industria 4.0, la logística y el almacenamiento se han convertido en pilares fundamentales para la competitividad empresarial. Este proyecto presenta el diseño y desarrollo de un <strong>Sistema Inteligente de Almacenamiento Dinámico (SIAD)</strong>, una solución innovadora que revoluciona la forma en que se gestionan los inventarios en almacenes, centros de distribución y entornos industriales.</p>
+        
+        <div class="image-gallery">
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500" alt="Almacén automatizado">
+                <div class="caption">Almacén automatizado con sistema SIAD</div>
+            </div>
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=500" alt="Sistema de lockers">
+                <div class="caption">Lockers dinámicos en movimiento</div>
+            </div>
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500" alt="Control automatizado">
+                <div class="caption">Panel de control inteligente</div>
+            </div>
+        </div>
+
+        <p>A diferencia de los sistemas tradicionales que requieren robots externos costosos o el uso de montacargas y escaleras, SIAD integra el movimiento directamente en la estructura mediante lockers que se desplazan vertical y horizontalmente sobre rieles electromecánicos. Esta innovación permite reducir significativamente los costos de inversión, mantenimiento y operación, mientras se aumenta la seguridad laboral y la eficiencia operativa.</p>
+        
+        <p>El sistema está diseñado para responder a comandos por categorías, permitiendo que secciones completas de productos se acerquen automáticamente al operario en el punto de acceso, eliminando la necesidad de desplazamientos largos, el uso de escaleras o andamios, y reduciendo drásticamente el riesgo de accidentes laborales.</p>
+    </section>
+
+    <section id="problema">
+        <h2>2. Problemática Actual</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">⏰</div>
+                <h4>Tiempo Perdido</h4>
+                <p>Los operarios pierden hasta un 30% de su jornada buscando productos en estanterías de difícil acceso.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🪜</div>
+                <h4>Uso de Escaleras</h4>
+                <p>Acceso a productos en altura requiere escaleras, andamios o montacargas, aumentando riesgos.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚠️</div>
+                <h4>Riesgo Laboral</h4>
+                <p>Las caídas desde altura son la principal causa de accidentes graves en almacenes.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h4>Altos Costos</h4>
+                <p>Sistemas robotizados tradicionales requieren inversiones superiores a $500,000 USD.</p>
+            </div>
+        </div>
+        <p>Además, la falta de organización dinámica provoca que los productos más demandados queden en ubicaciones inaccesibles, generando cuellos de botella y retrasos en la cadena de suministro. Los sistemas de almacenamiento convencionales no se adaptan a los cambios en la demanda, manteniendo una organización estática que no optimiza el flujo de trabajo.</p>
+    </section>
+
+    <section id="objetivos">
+        <h2>3. Objetivos</h2>
+        <h3>🎯 Objetivo General</h3>
+        <p>Diseñar e implementar un sistema de almacenamiento automatizado inteligente que optimice el espacio, reduzca tiempos de acceso y minimice la intervención humana mediante lockers dinámicos con movimiento vertical y horizontal integrado en la estructura.</p>
+        
+        <h3>📋 Objetivos Específicos</h3>
+        <ul>
+            <li><strong>Reducción de costos:</strong> Eliminar la necesidad de robots externos, montacargas y equipos de elevación tradicionales, reduciendo la inversión inicial hasta en un 40%.</li>
+            <li><strong>Automatización inteligente:</strong> Desarrollar un sistema de control que permita la reorganización automática de lockers por categorías y frecuencia de uso.</li>
+            <li><strong>Seguridad laboral:</strong> Eliminar el uso de escaleras y andamios, reduciendo a cero los accidentes por caídas en operaciones de almacenamiento.</li>
+            <li><strong>Eficiencia operativa:</strong> Reducir el tiempo de acceso a productos en un 70% mediante movimiento automatizado.</li>
+            <li><strong>Escalabilidad:</strong> Diseñar un sistema modular que pueda adaptarse a diferentes espacios y volúmenes de almacenamiento.</li>
+        </ul>
+    </section>
+
+    <section id="sistema">
+        <h2>4. Descripción del Sistema</h2>
+        <p>El SIAD (Sistema Inteligente de Almacenamiento Dinámico) consiste en una infraestructura inteligente de almacenamiento automatizado compuesta por una red de lockers organizados en una matriz tridimensional (filas, niveles y profundidad). Cada locker opera como una unidad de almacenamiento independiente, pero integrada en un ecosistema completamente automatizado que permite el movimiento dinámico de las unidades mediante motores eléctricos de precisión y sistemas de rieles electromecánicos.</p>
+        
+        <div class="image-gallery">
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=500" alt="Estructura modular">
+                <div class="caption">Estructura modular con rieles internos</div>
+            </div>
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1581092335871-5e5c3b6a6c5e?w=500" alt="Control centralizado">
+                <div class="caption">Sistema de control centralizado</div>
+            </div>
+        </div>
+
+        <p>Este sistema está diseñado para optimizar el espacio, reducir tiempos de acceso y minimizar la intervención humana, ofreciendo una solución escalable para entornos logísticos, comerciales o residenciales de alta demanda. La arquitectura se basa en tres niveles de control:</p>
+        
+        <ul>
+            <li><strong>Nivel de Hardware:</strong> Motores paso a paso, sensores de posición, rieles de desplazamiento y estructura metálica modular.</li>
+            <li><strong>Nivel de Control:</strong> PLC industrial, microcontroladores y sistema de comunicación CAN bus.</li>
+            <li><strong>Nivel de Software:</strong> Algoritmos de optimización, gestión de inventario e interfaz de usuario.</li>
+        </ul>
+        
+        <p>El sistema opera con energía eléctrica convencional, pero puede integrarse con paneles solares para operación off-grid, haciendo posible su implementación en zonas rurales o con suministro eléctrico limitado.</p>
+    </section>
+
+    <section id="estructura">
+        <h2>5. Estructura Física</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">🏗️</div>
+                <h4>Estructura Metálica Modular</h4>
+                <p>Perfiles de acero galvanizado de alta resistencia, diseñados para soportar cargas de hasta 200 kg por nivel.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📦</div>
+                <h4>Lockers por Categorías</h4>
+                <p>Organización flexible con 4 tamaños estándar: pequeño (30x30cm), mediano (45x45cm), grande (60x60cm) y extra grande (80x80cm).</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🛤️</div>
+                <h4>Rieles Horizontales</h4>
+                <p>Sistema de guías lineales de precisión que permiten desplazamiento lateral suave con capacidad de 50kg por locker.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⬆️</div>
+                <h4>Elevador Vertical</h4>
+                <p>Mecanismo de elevación con motores de corriente continua y sistema de frenos regenerativos para recuperación energética.</p>
+            </div>
+        </div>
+        
+        <p>La estructura permite configuraciones de hasta 6 niveles de altura y 20 columnas de ancho, con capacidad para almacenar desde pequeñas piezas hasta productos de gran formato. Cada locker cuenta con sensores de ocupación, iluminación LED indicadora y sistema de identificación RFID para seguimiento en tiempo real.</p>
+        
+        <h3>📏 Dimensiones Estándar</h3>
+        <ul>
+            <li><strong>Altura total:</strong> 3 a 8 metros (configurable según espacio)</li>
+            <li><strong>Ancho por columna:</strong> 1 a 1.5 metros</li>
+            <li><strong>Profundidad:</strong> 0.8 a 1.2 metros</li>
+            <li><strong>Capacidad por locker:</strong> 5 a 50 kg según tamaño</li>
+            <li><strong>Velocidad de desplazamiento:</strong> 0.5 m/s horizontal, 0.3 m/s vertical</li>
+        </ul>
+    </section>
+
+    <section id="maquinaria">
+        <h2>6. Maquinaria y Componentes Mecánicos</h2>
+        <p>El corazón mecánico del sistema está compuesto por componentes seleccionados por su durabilidad, precisión y bajo mantenimiento:</p>
+        
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">⚙️</div>
+                <h4>Servomotores</h4>
+                <p>Motores trifásicos con encoder integrado, precisión de posición ±0.5mm, potencia de 400W a 1.5kW según aplicación.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📡</div>
+                <h4>Sensores Industriales</h4>
+                <p>Sensores inductivos de proximidad, fotocélulas de seguridad, encoders ópticos para posicionamiento absoluto.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💻</div>
+                <h4>PLC Industrial</h4>
+                <p>Controlador lógico programable con módulos de expansión, comunicación Ethernet/IP y Modbus RTU.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔋</div>
+                <h4>Sistema de Frenos</h4>
+                <p>Frenos electromagnéticos con respaldo mecánico, sistema de frenado regenerativo para recuperación energética.</p>
+            </div>
+        </div>
+        
+        <p><strong>Innovación clave:</strong> A diferencia de los sistemas tradicionales que utilizan robots móviles costosos (AGV/AMR) o brazos robóticos, SIAD integra el movimiento directamente en la estructura, eliminando la necesidad de robots externos. Esto representa una reducción de costos de inversión del 40-60%, menor complejidad de mantenimiento y mayor confiabilidad operativa.</p>
+    </section>
+
+    <section id="software">
+        <h2>7. Arquitectura de Software</h2>
+        <p>El sistema SIAD cuenta con una arquitectura de software moderna y escalable que integra todas las funcionalidades necesarias para la gestión inteligente del almacén:</p>
+        
+        <div class="tech-stack">
+            <span class="tech-badge">HTML5</span>
+            <span class="tech-badge">CSS3</span>
+            <span class="tech-badge">JavaScript</span>
+            <span class="tech-badge">Python</span>
+            <span class="tech-badge">Flask/Django</span>
+            <span class="tech-badge">MySQL/PostgreSQL</span>
+            <span class="tech-badge">REST API</span>
+            <span class="tech-badge">WebSockets</span>
+        </div>
+        
+        <h3>📊 Módulos Principales</h3>
+        <ul>
+            <li><strong>Gestión de Inventario:</strong> Control en tiempo real de existencias, ubicaciones, movimientos y trazabilidad completa de productos.</li>
+            <li><strong>Control por Categorías:</strong> Agrupación inteligente de productos por tipo, frecuencia de uso, tamaño y peso para optimizar la ubicación.</li>
+            <li><strong>Algoritmos de Optimización:</strong> Reorganización automática basada en patrones de demanda, priorizando productos más solicitados en posiciones de acceso rápido.</li>
+            <li><strong>Interfaz de Usuario Web:</strong> Panel de control intuitivo con visualización 3D del almacén, búsqueda por productos, historial de movimientos y reportes.</li>
+            <li><strong>API REST:</strong> Integración con sistemas ERP, WMS y plataformas de e-commerce para sincronización de inventario.</li>
+            <li><strong>Dashboard Administrativo:</strong> Métricas en tiempo real, análisis de rendimiento, alertas de mantenimiento predictivo.</li>
+        </ul>
+        
+        <div class="image-gallery">
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500" alt="Dashboard software">
+                <div class="caption">Dashboard de control y monitoreo</div>
+            </div>
+            <div class="image-card">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500" alt="Análisis de datos">
+                <div class="caption">Analítica y reportes inteligentes</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="logica">
+        <h2>8. Lógica Inteligente y Algoritmos</h2>
+        <p>La inteligencia del sistema radica en su capacidad para reorganizar dinámicamente los lockers según patrones de demanda y comportamiento de uso:</p>
+        
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <h4>Análisis Predictivo</h4>
+                <p>Algoritmos de machine learning que identifican productos de alta rotación y predicen demanda futura.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔄</div>
+                <h4>Reorganización Dinámica</h4>
+                <p>Productos más usados se reposicionan automáticamente en niveles bajos de acceso rápido.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h4>Optimización de Rutas</h4>
+                <p>Algoritmo A* para calcular trayectorias óptimas de movimiento, minimizando tiempo y consumo energético.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h4>Gestión Energética</h4>
+                <p>Sistema de frenos regenerativos que recupera energía en descensos, reduciendo consumo total hasta un 30%.</p>
+            </div>
+        </div>
+        
+        <p>La lógica de reorganización considera múltiples variables: frecuencia de acceso, tamaño del producto, peso, categoría, horarios de mayor demanda y correlaciones entre productos (ej: productos que suelen solicitarse juntos se almacenan cerca). Esto permite reducir significativamente los tiempos de preparación de pedidos (picking) y mejorar la productividad del personal.</p>
+    </section>
+
+    <section id="funcionamiento">
+        <h2>9. Flujo de Funcionamiento</h2>
+        <p>El proceso operativo del sistema SIAD sigue una secuencia optimizada que garantiza la máxima eficiencia:</p>
+        
+        <div class="stats-container" style="grid-template-columns: 1fr;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #1a4a3a);">
+                <div class="label" style="font-size: 16px;">🔄 Flujo Operativo Completo</div>
+            </div>
+        </div>
+        
+        <ol style="margin-top: 25px;">
+            <li><strong>Identificación del requerimiento:</strong> El operario ingresa el producto o categoría deseada a través de la interfaz web o panel táctil.</li>
+            <li><strong>Búsqueda inteligente:</strong> El sistema localiza la ubicación exacta del producto en la matriz de lockers.</li>
+            <li><strong>Planificación de ruta:</strong> Algoritmo de optimización calcula la trayectoria más eficiente considerando lockers en movimiento, prioridades y consumo energético.</li>
+            <li><strong>Activación del sistema mecánico:</strong> Se activan los servomotores correspondientes para desplazar los lockers necesarios.</li>
+            <li><strong>Movimiento sincronizado:</strong> Los lockers se desplazan horizontal y verticalmente sobre los rieles hasta el punto de acceso (estación del operario).</li>
+            <li><strong>Entrega del producto:</strong> El locker se posiciona en el área de entrega a altura ergonómica, la puerta se desbloquea automáticamente.</li>
+            <li><strong>Confirmación y actualización:</strong> El operario retira el producto, confirma en el sistema, y se actualiza el inventario en tiempo real.</li>
+            <li><strong>Reorganización posterior:</strong> Si es necesario, el sistema reubica otros lockers para optimizar espacios vacíos.</li>
+        </ol>
+        
+        <div class="image-card" style="margin-top: 20px;">
+            <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800" alt="Operario usando sistema">
+            <div class="caption">Operario interactuando con la estación de control SIAD</div>
+        </div>
+    </section>
+
+    <section id="costos">
+        <h2>10. Análisis de Costos y Beneficios</h2>
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="number">40%</div>
+                <div class="label">Menor inversión vs robots tradicionales</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">60%</div>
+                <div class="label">Reducción mantenimiento anual</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">70%</div>
+                <div class="label">Menor consumo energético</div>
+            </div>
+        </div>
+        
+        <h3>💰 Comparativa de Inversión</h3>
+        <ul>
+            <li><strong>Sistema SIAD:</strong> $150,000 - $300,000 USD (dependiendo capacidad)</li>
+            <li><strong>Sistema con AGV/Robots:</strong> $400,000 - $800,000 USD</li>
+            <li><strong>Almacén tradicional optimizado:</strong> $80,000 - $150,000 USD + costos operativos recurrentes</li>
+        </ul>
+        
+        <h3>📊 Retorno de Inversión (ROI)</h3>
+        <ul>
+            <li><strong>Ahorro en mano de obra:</strong> Reducción de 3-5 operarios por turno → $60,000 - $100,000 anuales</li>
+            <li><strong>Reducción de accidentes:</strong> Disminución de costos por accidentes laborales en un 90%</li>
+            <li><strong>Mayor productividad:</strong> Incremento de picking por hora del 40-60%</li>
+            <li><strong>ROI estimado:</strong> 2 a 3 años</li>
+        </ul>
+        
+        <p><strong>Beneficios adicionales:</strong> Mayor aprovechamiento del espacio (hasta +50% de capacidad), reducción de errores de inventario (menos del 1% vs 5-8% en sistemas manuales), y mejora en la satisfacción laboral al eliminar tareas de alto riesgo físico.</p>
+    </section>
+
+    <section id="impacto">
+        <h2>11. Impacto del Proyecto</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">🏭</div>
+                <h4>Impacto Industrial</h4>
+                <p>Modernización de almacenes con tecnología 4.0, aumentando competitividad y capacidad de respuesta.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h4>Impacto Económico</h4>
+                <p>Reducción de costos operativos, menor inversión en equipos, optimización de recursos humanos.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <h4>Impacto Tecnológico</h4>
+                <p>Democratización de la automatización, haciendo accesible tecnología avanzada a PYMES.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🛡️</div>
+                <h4>Seguridad Laboral</h4>
+                <p>Eliminación total de accidentes por caídas, reducción de enfermedades musculoesqueléticas.</p>
+            </div>
+        </div>
+        
+        <h3>🌍 Impacto Ambiental</h3>
+        <p>El sistema SIAD incorpora principios de sostenibilidad mediante:</p>
+        <ul>
+            <li>Consumo energético optimizado con motores de alta eficiencia (clase IE4)</li>
+            <li>Sistema de frenos regenerativos que recupera hasta un 30% de energía</li>
+            <li>Posibilidad de integración con paneles solares para operación 100% renovable</li>
+            <li>Reducción de huella de carbono al eliminar montacargas y equipos de combustión interna</li>
+            <li>Estructura fabricada con acero reciclable y componentes de larga vida útil</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>12. Casos de Aplicación</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">📦</div>
+                <h4>Centros de Distribución</h4>
+                <p>Ideal para e-commerce, retail y logística de última milla con alta rotación de productos.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔧</div>
+                <h4>Almacenes Industriales</h4>
+                <p>Perfecto para repuestos, herramientas y materiales de producción en plantas manufactureras.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏥</div>
+                <h4>Farmacias y Hospitales</h4>
+                <p>Gestión segura de medicamentos con trazabilidad y control de caducidad.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <h4>Archivos y Documentos</h4>
+                <p>Almacenamiento automatizado de documentación física con control de acceso por niveles de seguridad.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>13. Conclusiones</h2>
+        <p>El Sistema Inteligente de Almacenamiento Dinámico (SIAD) representa una innovación significativa en el campo de la logística y automatización industrial. Al integrar el movimiento directamente en la estructura de almacenamiento, se logra una solución que combina la eficiencia de los sistemas automatizados con la simplicidad y bajo costo de las soluciones tradicionales.</p>
+        
+        <p><strong>Principales conclusiones:</strong></p>
+        <ul>
+            <li>La eliminación de robots externos reduce la inversión inicial en un 40-60%, haciendo la automatización accesible para más empresas.</li>
+            <li>La reorganización dinámica por categorías y frecuencia de uso mejora la productividad en más de un 50%.</li>
+            <li>La seguridad laboral mejora drásticamente al eliminar el trabajo en altura y los desplazamientos innecesarios.</li>
+            <li>La escalabilidad modular permite adaptar el sistema a diferentes espacios y necesidades de almacenamiento.</li>
+            <li>La integración con energías renovables y sistemas de recuperación energética reduce la huella ambiental.</li>
+        </ul>
+        
+        <p>SIAD no solo es una solución técnica, sino una nueva filosofía de almacenamiento que pone al operario en el centro, acercando los productos en lugar de requerir que el operario se desplace hacia ellos. Este enfoque centrado en el ser humano, combinado con tecnología de vanguardia, representa el futuro de la gestión de almacenes en la Industria 4.0.</p>
+        
+        <div style="background: #e8f0ee; padding: 20px; border-radius: 15px; margin-top: 25px; text-align: center;">
+            <p style="font-size: 18px; font-weight: bold; color: #1a4a3a;">🚀 El futuro del almacenamiento es dinámico, inteligente y sostenible. SIAD es esa revolución.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2024 SIAD - Sistema Inteligente de Almacenamiento Dinámico</p>
+        <p>Proyecto Final de Ingeniería de Software | Innovación en Logística Automatizada</p>
+        <p style="margin-top: 15px; font-size: 12px;">📧 contacto@siad.com | 🌐 www.siad.com</p>
+    </footer>
+
+</body>
+</html>
